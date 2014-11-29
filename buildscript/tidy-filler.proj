@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0" DefaultTargets="Default">
+  <PropertyGroup>
+    <BasePath>$(MSBuildProjectDirectory)\..</BasePath>
+    
+    <OutputPath>$(BasePath)\build</OutputPath>
+    <PackagesPath>$(BasePath)\packages</PackagesPath>
+    <NunitToolsPath>$(PackagesPath)\NUnit.Runners.2.6.3\tools</NunitToolsPath>
+    <SourcePath>$(BasePath)\src</SourcePath>
+    <MSBuildCommunityTasksPath>$(PackagesPath)\MSBuildTasks.1.4.0.78\tools</MSBuildCommunityTasksPath>
+    <Version>0.0.2</Version>
+    <BuildNumber>0</BuildNumber>
+  </PropertyGroup>
+  
+  <Import Project="$(PackagesPath)\MSBuildTasks.1.4.0.78\tools\MSBuild.Community.Tasks.Targets"/>
+  
+  <Target Name="UpdateVersion">
+    <FileUpdate Files="$(SourcePath)\TidyFiller\Properties\AssemblyInfo.cs"
+                Regex="AssemblyVersion\(&quot;(\d+)\.(\d+)\.(\d+)\.(\d+)&quot;\)"
+                ReplacementText="AssemblyVersion(&quot;$(Version).$(BuildNumber)&quot;)" />
+  </Target>
+  
+  <Target Name="Build">
+    <MSBuild Projects="$(BasePath)\TidyFiller.sln" Targets="Clean;Rebuild" Properties="configuration=release" />
+  </Target>
+  
+  <Target Name="Test" DependsOnTargets="Build">
+    <NUnit ToolPath="$(NunitToolsPath)" 
+           Assemblies="$(SourcePath)\TidyFiller.Test\bin\release\TidyFiller.Test.dll"
+           OutputXmlFile="$(OutputPath)\TestResults.xml" />
+  </Target>
+  
+  <Target Name="Package">
+    <MakeDir Directories="$(OutputPath)" Condition="!Exists('$(OutputPath)')" />
+    <Exec WorkingDirectory="$(MSBuildProjectDirectory)" 
+          Command="$(MSBuildProjectDirectory)\nuget.exe pack $(SourcePath)\TidyFiller\TidyFiller.csproj -version $(Version) -OutputDirectory $(OutputPath) -Symbols" />
+  </Target>
+</Project>

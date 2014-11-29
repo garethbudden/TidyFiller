@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0" DefaultTargets="EnsureNuGet;EnsureBuildPackages">
+  <PropertyGroup>
+    <NuGetExe>$(MSBuildProjectDirectory)\nuget.exe</NuGetExe>
+    <PackagesDir>$(MSBuildProjectDirectory)\..\packages</PackagesDir>
+  </PropertyGroup>
+
+  <UsingTask TaskName="DownloadFile" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <Address ParameterType="System.String" Required="true"/>
+      <FileName ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+            new System.Net.WebClient().DownloadFile(Address, FileName);
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+  
+  <Target Name="EnsureNuGet">
+    <Message Text="nuget.exe exists skipping download" Condition="Exists('$(NuGetExe)')" Importance="high" />
+    <Message Text="downloading nuget.exe from http://nuget.org/nuget.exe" Condition="!Exists('$(NuGetExe)')" Importance="high" />
+    <DownloadFile Address="http://nuget.org/nuget.exe" FileName="$(NuGetExe)" Condition="!Exists('$(NuGetExe)')" />
+  </Target>
+  
+  <Target Name="EnsureBuildPackages">
+    <Exec Command="$(NuGetExe) restore -PackagesDirectory $(PackagesDir)" />
+  </Target>
+</Project>

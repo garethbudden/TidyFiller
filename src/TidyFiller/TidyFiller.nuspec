@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <metadata>
+    <id>TidyFiller</id>
+    <version>0.0.0</version>    
+    <authors>Gareth Budden</authors>
+    <owners>Gareth Budden</owners>
+    <description>A few useful type for .net</description>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <copyright>Copyright Gareth Budden 2014</copyright>
+  </metadata>
+</package>
