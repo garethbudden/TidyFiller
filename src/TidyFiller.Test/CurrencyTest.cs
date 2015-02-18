@@ -116,5 +116,15 @@ namespace TidyFiller.Test
 
             Assert.That(currency, Is.EqualTo(Currency.EUR));
         }
+
+        [TestCase("GBP")]
+        [TestCase("EUR")]
+        [TestCase("USD")]
+        public void CanParseAnd(string code)
+        {
+            var currency = (Currency)code;
+
+            Assert.That(code, Is.EqualTo(currency.ToString()));
+        }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Linq;
 
 namespace TidyFiller
 {
@@ -110,6 +109,31 @@ namespace TidyFiller
             return !(money1 == money2);
         }
         
+        public static Money Parse(string format)
+        {
+            if (format == null)
+                return null;
+
+            var parts = format.Trim().Split(' ');
+
+            if (parts.Length != 2)
+                ThrowFormatException("Can not parse \"{0}\" into a Money class.", format);
+
+            decimal value;
+            if(!decimal.TryParse(parts[0], out value))
+                ThrowFormatException("Can not parse \"{0}\" into a Money class.", format);
+
+            if(!Currency.CanParse(parts[1]))
+                ThrowFormatException("Can not parse \"{0}\" into a Money class.", format);
+
+            return new Money(value, (Currency)parts[1]);
+        }
+
+        private static void ThrowFormatException(string format, params object[] args)
+        {
+            throw new FormatException(string.Format(format, args));
+        }
+
         public Money AtZero
         {
             get { return new Money(0, _currency); }
@@ -155,6 +179,11 @@ namespace TidyFiller
                 || NudgeRoundingDown() == value;
         }
 
+        public Money Round()
+        {
+            return new Money(_currency.ApplyRounding(_value), _currency);
+        }
+
         public override bool Equals(object obj)
         {
             if (!(obj is Money))
@@ -179,6 +208,12 @@ namespace TidyFiller
         public string ToString(CultureInfo cultureInfo)
         {
             return _currency.Format(_value, cultureInfo);
+        }
+
+        public string ToStringWithCode()
+        {
+            _currency.ApplyRounding(_value);
+            return string.Format("{0} {1}", _value, _currency);
         }
 
         private static void AssertAreSameCurrency(Money thisMoney, Money thatMoney)

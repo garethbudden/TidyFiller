@@ -65,6 +65,18 @@ namespace TidyFiller
             }
         }
 
+        public static bool CanParse(string code)
+        {
+            switch (code)
+            {
+                case "GBP":
+                case "USD":
+                case "EUR": return true;
+                default:
+                    return false;
+            }
+        }
+
         public string Format(decimal value, CultureInfo cultureInfo)
         {
             var format = (NumberFormatInfo)cultureInfo.NumberFormat.Clone();
@@ -98,6 +110,11 @@ namespace TidyFiller
                     ^ (_number.GetHashCode() * 31) 
                     ^ (_currencySymbol.GetHashCode() * 31);
             }
+        }
+
+        public override string ToString()
+        {
+            return _code;
         }
     }
 }

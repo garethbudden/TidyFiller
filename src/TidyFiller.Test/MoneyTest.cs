@@ -1,6 +1,5 @@
-﻿using System;
-using NUnit.Framework;
-using TidyFiller;
+﻿using NUnit.Framework;
+using System;
 
 namespace TidyFiller.Test
 {
@@ -414,6 +413,79 @@ namespace TidyFiller.Test
             var original = new Money(100, Currency.GBP);
 
             Assert.That(original.NudgeRoundingDown(), Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void ToStringWithCodeWillReturnCorrectFormat()
+        {
+            var value = new Money(12.33, Currency.USD);
+
+            Assert.That(value.ToStringWithCode(), Is.EqualTo("12.33 USD"));
+        }
+
+        [Test]
+        public void ToStringWithCodeWillReturnCorrectFormatWithAllDecimalPlaces()
+        {
+            var value = new Money(12.3333333333333, Currency.USD);
+
+            Assert.That(value.ToStringWithCode(), Is.EqualTo("12.3333333333333 USD"));
+        }
+
+        [Test]
+        public void WhenRoundingIfNoDecimalWillNotCauseProblem() 
+        {
+            var value = new Money(12, Currency.EUR);
+
+            Assert.That(value.Round(), Is.EqualTo(new Money(12, Currency.EUR)));
+        }
+
+        [Test]
+        public void WhenRoundingIfDecimalIsNotWithinIssueWillNotCauseProblem()
+        {
+            var value = new Money(12.09, Currency.EUR);
+
+            Assert.That(value.Round(), Is.EqualTo(new Money(12.09, Currency.EUR)));
+        }
+
+        [Test]
+        public void WhenRoundingCanApplyRounding()
+        {
+            var value = new Money(12.3333333333334, Currency.EUR);
+
+            Assert.That(value.Round(), Is.EqualTo(new Money(12.33, Currency.EUR)));
+        }
+
+        [TestCase("12.45GBP")]
+        [TestCase("GBP 12.45")]
+        [TestCase("12.45")]
+        [TestCase("GBP")]
+        [TestCase("GBP12.45")]
+        [TestCase("$12.45")]
+        [TestCase("")]
+        [TestCase(" ")]
+        public void WillThrowFormatException(string format)
+        {
+            var exception = Assert.Throws<FormatException>(() => Money.Parse(format));
+
+            Assert.That(exception.Message, Is.EqualTo(string.Format("Can not parse \"{0}\" into a Money class.", format)));
+        }
+
+        [Test]
+        public void CanParseNull()
+        {
+            Assert.That(Money.Parse(null), Is.Null);
+        }
+        
+        [Test]
+        public void CanParse()
+        {
+            Assert.That(Money.Parse("32.88 USD"), Is.EqualTo(new Money(32.88, Currency.USD)));
+        }
+
+        [Test]
+        public void CanParseIfPadded()
+        {
+            Assert.That(Money.Parse(" 32.88 GBP "), Is.EqualTo(new Money(32.88, Currency.GBP)));
         }
     }
 }
