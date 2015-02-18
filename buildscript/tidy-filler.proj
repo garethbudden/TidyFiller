@@ -8,7 +8,7 @@
     <NunitToolsPath>$(PackagesPath)\NUnit.Runners.2.6.3\tools</NunitToolsPath>
     <SourcePath>$(BasePath)\src</SourcePath>
     <MSBuildCommunityTasksPath>$(PackagesPath)\MSBuildTasks.1.4.0.78\tools</MSBuildCommunityTasksPath>
-    <Version>0.0.2</Version>
+    <Version>0.0.3</Version>
     <BuildNumber>0</BuildNumber>
   </PropertyGroup>
   
